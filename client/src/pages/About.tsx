@@ -41,7 +41,7 @@ export default function About() {
                         >
                             <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                             <p className="text-muted-foreground leading-relaxed">
-                                At Oussaili Store, our mission is to redefine the shopping experience in Liberia by providing access to premium, high-quality products that enhance your lifestyle. We believe in bridging the gap between global trends and local needs, ensuring that you never have to compromise on quality or style.
+                                At Store, our mission is to redefine the shopping experience in Liberia by providing access to premium, high-quality products that enhance your lifestyle. We believe in bridging the gap between global trends and local needs, ensuring that you never have to compromise on quality or style.
                             </p>
                         </motion.div>
 

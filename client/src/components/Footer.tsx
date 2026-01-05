@@ -8,7 +8,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
                         <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Oussaili
+                            Store
                         </h3>
                         <p className="text-muted-foreground text-sm">
                             Refined essentials for modern life. Quality meets elegance in every product.
@@ -33,11 +33,11 @@ export function Footer() {
                             </li>
                             <li className="flex items-center gap-2">
                                 <Phone className="w-4 h-4 text-primary" />
-                                <span>+231 77 029 7303</span>
+                                <span>+231 88 888 8888</span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-primary" />
-                                <span>contact@oussailistore.com</span>
+                                <span>contact@store.com</span>
                             </li>
                         </ul>
                     </div>
@@ -56,7 +56,7 @@ export function Footer() {
                 </div>
 
                 <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; {new Date().getFullYear()} Oussaili Store. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Store. All rights reserved.</p>
                 </div>
             </div>
         </footer>

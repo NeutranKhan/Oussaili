@@ -159,7 +159,7 @@ export default function Cart() {
                     className="mt-4 p-4 bg-secondary/50 rounded-xl text-sm text-muted-foreground border border-border"
                   >
                     <p className="font-medium text-foreground mb-1">Payment Instructions:</p>
-                    <p>Please transfer the total amount to <strong>+231 77 029 7303</strong>.</p>
+                    <p>Please transfer the total amount to <strong>+231 88 888 8888</strong>.</p>
                     <p className="mt-1">Your order will be processed once payment is confirmed.</p>
                   </motion.div>
                 )}

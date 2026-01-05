@@ -137,7 +137,7 @@ export default function Auth() {
                 <label className="text-sm font-medium ml-1">Phone Number</label>
                 <Input
                   type="tel"
-                  placeholder="+231..."
+                  placeholder="+231 88 888 8888"
                   className="bg-white/50 border-white/20 focus:bg-white transition-colors"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}

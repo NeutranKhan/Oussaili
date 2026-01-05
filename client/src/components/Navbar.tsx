@@ -26,7 +26,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-8">
       <div className="max-w-7xl mx-auto glass rounded-2xl px-6 py-3 flex items-center justify-between">
         <Link href="/" className="text-2xl font-display font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-          Oussaili
+          Store
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
