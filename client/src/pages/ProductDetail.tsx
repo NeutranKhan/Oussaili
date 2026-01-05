@@ -1,6 +1,7 @@
 import { useRoute } from "wouter";
 import { useProducts } from "@/hooks/use-products";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { Loader2, ArrowLeft, ShoppingCart, ShieldCheck, Truck } from "lucide-react";
@@ -44,32 +45,32 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      
+
       <main className="max-w-7xl mx-auto px-4 md:px-8 pt-32">
         <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Store
         </Link>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           {/* Image Gallery */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="glass rounded-3xl p-4 md:p-8 aspect-square flex items-center justify-center relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-purple-500/10" />
-            <img 
+            <img
               src={product.imageUrl || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"}
               alt={product.name}
               className="w-full h-full object-contain relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-500"
             />
           </motion.div>
-          
+
           {/* Product Info */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col gap-8"
@@ -81,14 +82,14 @@ export default function ProductDetail() {
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">{product.name}</h1>
               <p className="text-3xl font-light text-foreground/80">${product.price.toFixed(2)}</p>
             </div>
-            
+
             <p className="text-lg text-muted-foreground leading-relaxed">
               {product.description}
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="flex-1 rounded-xl h-14 text-lg font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all"
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
@@ -111,7 +112,33 @@ export default function ProductDetail() {
             </div>
           </motion.div>
         </div>
+
+        {/* Related Products */}
+        <div className="mt-24">
+          <h2 className="text-2xl font-bold mb-8">You Might Also Like</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products
+              ?.filter(p => p.category === product.category && p.id !== product.id)
+              .slice(0, 4)
+              .map(related => (
+                <Link key={related.id} href={`/product/${related.id}`}>
+                  <div className="group cursor-pointer">
+                    <div className="glass aspect-square rounded-2xl p-4 mb-4 flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:bg-white/60 dark:group-hover:bg-white/10">
+                      <img
+                        src={related.imageUrl}
+                        alt={related.name}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <h3 className="font-semibold">{related.name}</h3>
+                    <p className="text-muted-foreground">${related.price.toFixed(2)}</p>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </div>
       </main>
-    </div>
+      <Footer />
+    </div >
   );
 }

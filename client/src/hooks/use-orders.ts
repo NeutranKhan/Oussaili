@@ -7,29 +7,35 @@ import { useAuth } from "./use-auth";
 
 export function useOrders() {
   const { user, isAdmin } = useAuth();
-  
+
   return useQuery({
     queryKey: ['orders', user?.uid],
     enabled: !!user,
     queryFn: async () => {
       const ordersRef = collection(db, 'orders');
       let q;
-      
+
       if (isAdmin) {
-        q = query(ordersRef, orderBy('createdAt', 'desc'));
+        q = query(ordersRef);
       } else {
-        q = query(ordersRef, where('userId', '==', user!.uid), orderBy('createdAt', 'desc'));
+        q = query(ordersRef, where('userId', '==', user!.uid));
       }
-      
+
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => {
+      const orders = snapshot.docs.map(doc => {
         const data = doc.data();
-        // Convert timestamp to date if needed, though schema accepts both
-        return { 
-          id: doc.id, 
+        return {
+          id: doc.id,
           ...data,
           createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt)
         } as Order;
+      });
+
+      // Sort client-side to avoid missing index issues
+      return orders.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
       });
     }
   });
@@ -46,10 +52,10 @@ export function useCreateOrder() {
         createdAt: new Date(),
         status: 'pending' as const
       };
-      
+
       // Validate
       orderSchema.parse(newOrder);
-      
+
       const docRef = await addDoc(collection(db, 'orders'), newOrder);
       return { id: docRef.id, ...newOrder };
     },

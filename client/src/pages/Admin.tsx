@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { useRequireAuth } from "@/hooks/use-auth";
 import { useProducts, useCreateProduct, useDeleteProduct, useUpdateProduct } from "@/hooks/use-products";
 import { useOrders, useUpdateOrderStatus } from "@/hooks/use-orders";
+import { useUsers } from "@/hooks/use-users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,12 +22,14 @@ export default function Admin() {
   const { user, isAdmin, loading } = useRequireAuth(true);
   const { data: products } = useProducts();
   const { data: orders } = useOrders();
+  const { data: users } = useUsers();
 
   if (loading || !user || !isAdmin) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
   const totalRevenue = orders?.reduce((acc, order) => acc + order.total, 0) || 0;
   const totalOrders = orders?.length || 0;
   const totalProducts = products?.length || 0;
+  const totalUsers = users?.length || 0;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -65,12 +68,23 @@ export default function Admin() {
               <div className="text-2xl font-bold">{totalProducts}</div>
             </CardContent>
           </Card>
+
+          <Card className="glass border-0">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+              <Users className="w-4 h-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalUsers}</div>
+            </CardContent>
+          </Card>
         </div>
 
         <Tabs defaultValue="products" className="space-y-8">
           <TabsList className="bg-secondary/50 p-1 rounded-full">
             <TabsTrigger value="products" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm">Products</TabsTrigger>
             <TabsTrigger value="orders" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm">Orders</TabsTrigger>
+            <TabsTrigger value="users" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm">Users</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -80,9 +94,13 @@ export default function Admin() {
           <TabsContent value="orders">
             <OrderManager />
           </TabsContent>
+
+          <TabsContent value="users">
+            <UserManager />
+          </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 
@@ -138,9 +156,9 @@ function ProductManager() {
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <EditProductDialog product={product} />
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-destructive hover:bg-destructive/10"
                         onClick={() => deleteProduct.mutate(product.id)}
                       >
@@ -161,7 +179,7 @@ function ProductManager() {
 function ProductForm({ product, onSuccess }: { product?: InsertProduct & { id: string }, onSuccess: () => void }) {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
-  
+
   const form = useForm<InsertProduct>({
     resolver: zodResolver(insertProductSchema),
     defaultValues: product || {
@@ -196,7 +214,7 @@ function ProductForm({ product, onSuccess }: { product?: InsertProduct & { id: s
           <Input {...form.register("category")} placeholder="Electronics, Clothing..." />
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Description</label>
         <Textarea {...form.register("description")} placeholder="Describe the product..." />
@@ -266,7 +284,7 @@ function OrderManager() {
             <tbody className="divide-y divide-border">
               {orders?.map((order) => (
                 <tr key={order.id} className="hover:bg-secondary/20 transition-colors">
-                  <td className="px-6 py-4 font-mono text-xs">{order.id.slice(0,8)}...</td>
+                  <td className="px-6 py-4 font-mono text-xs">{order.id.slice(0, 8)}...</td>
                   <td className="px-6 py-4">{order.userEmail}</td>
                   <td className="px-6 py-4 text-muted-foreground">
                     {order.createdAt instanceof Date ? order.createdAt.toLocaleDateString() : new Date(order.createdAt).toLocaleDateString()}
@@ -274,16 +292,16 @@ function OrderManager() {
                   <td className="px-6 py-4 font-medium">${order.total.toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                      ${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 
+                      ${order.status === 'delivered' ? 'bg-green-100 text-green-800' :
                         order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                        order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'}`}>
+                          order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'}`}>
                       {order.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <Select 
-                      defaultValue={order.status} 
+                    <Select
+                      defaultValue={order.status}
                       onValueChange={(val: any) => updateStatus.mutate({ id: order.id, status: val })}
                     >
                       <SelectTrigger className="w-32 h-8">
@@ -297,6 +315,54 @@ function OrderManager() {
                       </SelectContent>
                     </Select>
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UserManager() {
+  const { data: users } = useUsers();
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold">User Management</h2>
+      <div className="glass rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-secondary/50 text-muted-foreground font-medium border-b border-border">
+              <tr>
+                <th className="px-6 py-4">User</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Role</th>
+                <th className="px-6 py-4">User ID</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {users?.map((user) => (
+                <tr key={user.id} className="hover:bg-secondary/20 transition-colors">
+                  <td className="px-6 py-4 font-medium flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.displayName || "User"} className="w-full h-full object-cover" />
+                      ) : (
+                        <Users className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    {user.displayName || "Unknown User"}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">{user.email}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{user.id}</td>
                 </tr>
               ))}
             </tbody>

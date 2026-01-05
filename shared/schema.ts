@@ -30,6 +30,7 @@ export const orderSchema = z.object({
   items: z.array(orderItemSchema),
   total: z.number(),
   status: z.enum(["pending", "processing", "shipped", "delivered"]),
+  paymentMethod: z.enum(["cash_on_delivery", "orange_money", "lonestar_money"]).default("cash_on_delivery"),
   createdAt: z.string().or(z.date()), // Firestore timestamp
 });
 
@@ -40,8 +41,11 @@ export type OrderItem = z.infer<typeof orderItemSchema>;
 export const userProfileSchema = z.object({
   email: z.string().email(),
   displayName: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  phoneNumber: z.string().optional(),
   role: z.enum(["admin", "customer"]).default("customer"),
-  photoURL: z.string().optional(),
+  photoURL: z.string().nullable().optional(),
 });
 
 export type UserProfile = z.infer<typeof userProfileSchema> & { id: string };
